@@ -28,6 +28,9 @@ class GameState():
         self.whiteToMove = True
         self.moveLog = []
 
+    '''
+    Take a move as a parameter and execute it (not special move like: en-passant, castling or promotion)
+    '''
     def makeMove(self, move):
         self.board[move.startRow][move.startCol] = "--"
         self.board[move.endRow][move.endCol] = move.pieceMoved
@@ -38,14 +41,26 @@ class GameState():
         # Switch turn
         self.whiteToMove = not self.whiteToMove
 
+    '''
+    Undo last move made
+    '''
+    def undoMove(self):
+        # Check if moveLog is empty
+        if len(self.moveLog) != 0:
+            move = self.moveLog.pop()
+            self.board[move.startRow][move.startCol] = move.pieceMoved
+            self.board[move.endRow][move.endCol] = move.pieceCaptured
+
+            # Switch turn
+            self.whiteToMove = not self.whiteToMove
+
 class Move():
 
+    # Represent chess board Ranks and Files (Row and Column in programing context)
     ranksToRows = {"1":7, "2":6, "3":5, "4":4, "5":3, "6":2, "7":1," 8":0}
-
     rowsToRanks = {v: k for k, v in ranksToRows.items()}
 
     filesToCols = {"a":0, "b":1, "c":2, "d":3, "e":4, "f":5, "g":6, "h":7}
-
     colsToFiles = {v: k for k, v in filesToCols.items()}
 
     def __init__(self, startSq, endSq, board):
