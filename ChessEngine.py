@@ -18,51 +18,25 @@ class GameState:
         #     ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]
         # ]
         self.board = [
-            [
-                "bR_Neo",
-                "bN_Neo",
-                "bB_Neo",
-                "bQ_Neo",
-                "bK_Neo",
-                "bB_Neo",
-                "bN_Neo",
-                "bR_Neo",
-            ],
-            [
-                "bP_Neo",
-                "bP_Neo",
-                "bP_Neo",
-                "bP_Neo",
-                "bP_Neo",
-                "bP_Neo",
-                "bP_Neo",
-                "bP_Neo",
-            ],
+            ["bR_Neo","bN_Neo","bB_Neo","bQ_Neo","bK_Neo","bB_Neo","bN_Neo","bR_Neo"],
+            ["bP_Neo","bP_Neo","bP_Neo","bP_Neo","bP_Neo","bP_Neo","bP_Neo","bP_Neo"],
+            ["--", "--", "--", "--", "--", "wP_Neo", "--", "--"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
             ["--", "--", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "--", "--", "--", "--", "--"],
-            [
-                "wP_Neo",
-                "wP_Neo",
-                "wP_Neo",
-                "wP_Neo",
-                "wP_Neo",
-                "wP_Neo",
-                "wP_Neo",
-                "wP_Neo",
-            ],
-            [
-                "wR_Neo",
-                "wN_Neo",
-                "wB_Neo",
-                "wQ_Neo",
-                "wK_Neo",
-                "wB_Neo",
-                "wN_Neo",
-                "wR_Neo",
-            ],
+            ["--", "--", "--", "--", "bP_Neo", "--", "--", "--"],
+            ["wP_Neo","wP_Neo","wP_Neo","wP_Neo","wP_Neo","wP_Neo","wP_Neo","wP_Neo"],
+            ["wR_Neo","wN_Neo","wB_Neo","wQ_Neo","wK_Neo","wB_Neo","wN_Neo","wR_Neo"],
         ]
+
+        self.moveFunctions = {
+            'P': self.getPawnMoves,
+            'R': self.getRockMoves,
+            'N': self.getKnightMoves,
+            'B': self.getBishopMoves,
+            'Q': self.getQueenMoves,
+            'K': self.getKingMoves,
+        }
+
         self.whiteToMove = True
         self.moveLog = []
 
@@ -106,28 +80,74 @@ class GameState:
     """
 
     def getAllPossibleMoves(self):
-        moves = [Move((6, 4), (4, 4), self.board)]
+        moves = []
         for r in range(len(self.board)):
             for c in range(len(self.board[r])):
                 turn = self.board[r][c][0]
                 if (turn == "w" and self.whiteToMove) or (turn == "b" and not self.whiteToMove):
                     piece = self.board[r][c][1]
-                    if piece == "P":
-                        self.getPawnMoves(r, c, moves)
-                    elif piece == "R":
-                        self.getRockMoves(r, c, moves)
+
+                    # Calls the appropriate move function based on piece type
+                    self.moveFunctions[piece](r, c, moves)
         return moves
 
     '''
     Get all the pawn moves for the pawn located at row, col and add these moves to the list
     '''
     def getPawnMoves(self, r, c, moves):
-        pass
+        # White's pawn moves
+        if self.whiteToMove:
+            if self.board[r-1][c] == "--":
+                moves.append(Move((r, c), (r-1, c), self.board))
+                if self.board[r-2][c] == "--" and r == 6:
+                    moves.append(Move((r, c), (r-2, c), self.board))
+            if c-1 >= 0:
+                if self.board[r-1][c-1][0] == "b":
+                    moves.append(Move((r, c), (r-1, c-1), self.board))
+            if c+1 <= 7:
+                if self.board[r-1][c+1][0] == "b":
+                    moves.append(Move((r, c), (r-1, c+1), self.board))
+        # Black's pawn moves
+        else:
+            if self.board[r+1][c] == "--":
+                moves.append(Move((r, c), (r+1, c), self.board))
+                if self.board[r+2][c] == "--" and r == 1:
+                    moves.append(Move((r, c), (r+2, c), self.board))
+            if c-1 >= 0:
+                if self.board[r+1][c-1][0] == "w":
+                    moves.append(Move((r, c), (r+1, c-1), self.board))
+            if c+1 <= 7:
+                if self.board[r+1][c+1][0] == "w":
+                    moves.append(Move((r, c), (r+1, c+1), self.board))
 
     '''
     Get all the rock moves for the pawn located at row, col and add these moves to the list
     '''
     def getRockMoves(self, r, c, moves):
+        pass
+
+    '''
+    Get all the rock moves for the pawn located at row, col and add these moves to the list
+    '''
+    def getKnightMoves(self, r, c, moves):
+        pass
+
+    '''
+    Get all the rock moves for the pawn located at row, col and add these moves to the list
+    '''
+    def getBishopMoves(self, r, c, moves):
+        pass
+
+    '''
+    Get all the rock moves for the pawn located at row, col and add these moves to the list
+    '''
+    def getQueenMoves(self, r, c, moves):
+        pass
+
+    '''
+    Get all the rock moves for the pawn located at row, col and add these moves to the list
+    '''
+    def getKingMoves(self, r, c, moves):
         pass
 
 class Move:
@@ -146,7 +166,7 @@ class Move:
         self.pieceMoved = board[self.startRow][self.startCol]
         self.pieceCaptured = board[self.endRow][self.endCol]
         self.moveID = self.startRow*1000+self.startCol*100+self.endRow*10+self.endCol
-        print(self.moveID)
+        # print(self.moveID)
 
     '''
     Overriding the equals method
