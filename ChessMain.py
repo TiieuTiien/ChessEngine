@@ -15,8 +15,8 @@ Initialize a global dictionary of images. This will be called exactly once in th
 '''
 def loadImages():
     # Normal board
-    # pieces = ["wR", "wN", "wB", "wQ", "wK", "wP", "bR", "bN", "bB", "bQ", "bK", "bP"]
-    pieces = ["wR_Neo", "wN_Neo", "wB_Neo", "wQ_Neo", "wK_Neo", "wP_Neo", "bR_Neo", "bN_Neo", "bB_Neo", "bQ_Neo", "bK_Neo", "bP_Neo"]
+    pieces = ["wR", "wN", "wB", "wQ", "wK", "wP", "bR", "bN", "bB", "bQ", "bK", "bP"]
+    # pieces = ["wR_Neo", "wN_Neo", "wB_Neo", "wQ_Neo", "wK_Neo", "wP_Neo", "bR_Neo", "bN_Neo", "bB_Neo", "bQ_Neo", "bK_Neo", "bP_Neo"]
     for piece in pieces:
         IMAGES[piece] = p.transform.scale(p.image.load("images/"+piece+".png"), (SQ_SIZE, SQ_SIZE))
 
