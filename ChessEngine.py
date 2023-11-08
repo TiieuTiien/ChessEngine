@@ -17,16 +17,6 @@ class GameState:
             ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
             ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]
         ]
-        # self.board = [
-        #     ["bR_Neo","bN_Neo","bB_Neo","bQ_Neo","bK_Neo","bB_Neo","bN_Neo","bR_Neo"],
-        #     ["bP_Neo","bP_Neo","bP_Neo","bP_Neo","bP_Neo","bP_Neo","bP_Neo","bP_Neo"],
-        #     ["--", "--", "--", "--", "--", "--", "--", "--"],
-        #     ["--", "--", "--", "--", "--", "--", "--", "--"],
-        #     ["--", "--", "--", "--", "--", "--", "--", "--"],
-        #     ["--", "--", "--", "--", "wR_Neo", "--", "--", "--"],
-        #     ["wP_Neo","wP_Neo","wP_Neo","wP_Neo","wP_Neo","wP_Neo","wP_Neo","wP_Neo"],
-        #     ["wR_Neo","wN_Neo","wB_Neo","wQ_Neo","wK_Neo","wB_Neo","wN_Neo","wR_Neo"],
-        # ]
 
         self.moveFunctions = {
             'P': self.getPawnMoves,
@@ -95,86 +85,69 @@ class GameState:
     Get all the pawn moves for the pawn located at row, col and add these moves to the list
     '''
     def getPawnMoves(self, r, c, moves):
-        # White's pawn moves
-        if self.whiteToMove:
-            if self.board[r-1][c] == "--":
-                moves.append(Move((r, c), (r-1, c), self.board))
-                if self.board[r-2][c] == "--" and r == 6:
-                    moves.append(Move((r, c), (r-2, c), self.board))
-            if c-1 >= 0:
-                if self.board[r-1][c-1][0] == "b":
-                    moves.append(Move((r, c), (r-1, c-1), self.board))
-            if c+1 <= 7:
-                if self.board[r-1][c+1][0] == "b":
-                    moves.append(Move((r, c), (r-1, c+1), self.board))
-        # Black's pawn moves
-        else:
-            if self.board[r+1][c] == "--":
-                moves.append(Move((r, c), (r+1, c), self.board))
-                if self.board[r+2][c] == "--" and r == 1:
-                    moves.append(Move((r, c), (r+2, c), self.board))
-            if c-1 >= 0:
-                if self.board[r+1][c-1][0] == "w":
-                    moves.append(Move((r, c), (r+1, c-1), self.board))
-            if c+1 <= 7:
-                if self.board[r+1][c+1][0] == "w":
-                    moves.append(Move((r, c), (r+1, c+1), self.board))
+        whiteTurn = self.whiteToMove
+        # Define the direction of pawn moves based on the player's color
+        direction = -1 if whiteTurn else 1
+
+        # Check the square in front of the pawn
+        if self.board[r + direction][c] == "--":
+            moves.append(Move((r, c), (r + direction, c), self.board))
+            # Check two squares ahead for the initial move
+            if (
+                (r == 6 and whiteTurn) or
+                (r == 1 and not whiteTurn)
+            ) and self.board[r + 2 * direction][c] == "--":
+                moves.append(Move((r, c), (r + 2 * direction, c), self.board))
+
+        # Check for capturing moves to the left and right
+        for dc in [-1, 1]:
+            new_c = c + dc
+            if 0 <= new_c < 8:
+                target_piece = self.board[r + direction][new_c]
+                if target_piece != "--" and target_piece[0] != self.board[r][c][0]:
+                    moves.append(Move((r, c), (r + direction, new_c), self.board))
 
     '''
     Get all the rock moves for the rock located at row, col and add these moves to the list
     '''
     def getRockMoves(self, r, c, moves):
-        # # Check Up
-        # for up in range (r-1, -1, -1):
-        #     if self.board[up][c] == "--":
-        #         moves.append(Move((r, c), (up, c), self.board))
-        # # Check Down
-        # for down in range (r+1, 8):
-        #     if self.board[down][c] == "--":
-        #         moves.append(Move((r, c), (down, c), self.board))
-        # # Check Left
-        # for left in range (c-1, -1, -1):
-        #     if self.board[r][left] == "--":
-        #         moves.append(Move((r, c), (r, left), self.board))
-        # # Check Right
-        # for right in range (r+1, 8):
-        #     if self.board[r][right] == "--":
-        #         moves.append(Move((r, c), (r, right), self.board))
-
-        # Optimize way
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        self.getMovesInDirections(r, c, moves, directions)
 
-        for dr, dc in directions:
-            new_r, new_c = r + dr, c + dc
-            while 0 <= new_r < 8 and 0 <= new_c < 8:
-                new_pos = self.board[new_r][new_c]
-                if new_pos == "--" or new_pos[0] != self.board[r][c][0]:    
-                    moves.append(Move((r, c), (new_r, new_c), self.board))
-                    if new_pos != "--" and new_pos[0] != self.board[r][c][0]:
-                        break   
-                    new_r += dr
-                    new_c += dc
-                else:
-                    break
+    '''
+    Get all the bishop moves for the bishop located at row, col and add these moves to the list
+    '''
+    def getBishopMoves(self, r, c, moves):
+        directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+        self.getMovesInDirections(r, c, moves, directions)
+
+    '''
+    Get all the queen moves for the queen located at row, col and add these moves to the list
+    '''
+    def getQueenMoves(self, r, c, moves):
+        self.getBishopMoves(r, c, moves)
+        self.getRockMoves(r, c, moves)
 
     '''
     Get all the knight moves for the knight located at row, col and add these moves to the list
     '''
     def getKnightMoves(self, r, c, moves):
         directions = [(-1, -2), (-1, 2), (1, -2), (1, 2), (-2, -1), (-2, 1), (2, -1), (2, 1)]
+        self.getOneMoveInDirections(r, c, moves, directions)
 
-        for dr, dc in directions:
-            new_r, new_c = r + dr, c + dc
-            if 0 <= new_r < 8 and 0 <= new_c < 8 and self.board[new_r][new_c][0] != self.board[r][c][0]:
-                moves.append(Move((r, c), (new_r, new_c), self.board))
 
     '''
-    Get all the bishop moves for the bishop located at row, col and add these moves to the list
+    Get all the king moves for the king located at row, col and add these moves to the list
     '''
-    def getBishopMoves(self, r, c, moves):
-        # Optimize way
-        directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+    def getKingMoves(self, r, c, moves):
+        directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+        self.getOneMoveInDirections(r, c, moves, directions)
 
+
+    '''
+    Retrieve all moves in the provided direction.
+    '''
+    def getMovesInDirections(self, r, c, moves, directions):
         for dr, dc in directions:
             new_r, new_c = r + dr, c + dc
             while 0 <= new_r < 8 and 0 <= new_c < 8:
@@ -189,18 +162,9 @@ class GameState:
                     break
 
     '''
-    Get all the queen moves for the queen located at row, col and add these moves to the list
+    Retrieve one move in each provided direction.
     '''
-    def getQueenMoves(self, r, c, moves):
-        self.getBishopMoves(r, c, moves)
-        self.getRockMoves(r, c, moves)
-
-    '''
-    Get all the king moves for the king located at row, col and add these moves to the list
-    '''
-    def getKingMoves(self, r, c, moves):
-        directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
-
+    def getOneMoveInDirections(self, r, c, moves, directions):
         for dr, dc in directions:
             new_r, new_c = r + dr, c + dc
             if 0 <= new_r < 8 and 0 <= new_c < 8 and self.board[new_r][new_c][0] != self.board[r][c][0]:
