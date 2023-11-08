@@ -31,6 +31,8 @@ class GameState:
         self.moveLog = []
         self.whiteKingLocation = (7, 4)
         self.blackKingLocation = (0, 4)
+        self.checkMate = False
+        self.staleMate = False
 
     """
     Take a move as a parameter and execute it (not special move like: en-passant, castling or promotion)
@@ -91,6 +93,18 @@ class GameState:
             #5.) if they attack your king, not a valid move
             self.whiteToMove = not self.whiteToMove
             self.undoMove()
+        
+        if len(moves) == 0:
+            if self.incheck():
+                self.checkMate = True
+                print("Check mate!!!")
+            else:
+                self.staleMate = True
+                print("Stale mate!!!")
+        else: 
+            self.checkMate = False
+            self.staleMate = False
+
         return moves
     
     '''
