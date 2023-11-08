@@ -16,9 +16,9 @@ Initialize a global dictionary of images. This will be called exactly once in th
 def loadImages():
     # Normal board
     pieces = ["wR", "wN", "wB", "wQ", "wK", "wP", "bR", "bN", "bB", "bQ", "bK", "bP"]
-    # pieces = ["wR_Neo", "wN_Neo", "wB_Neo", "wQ_Neo", "wK_Neo", "wP_Neo", "bR_Neo", "bN_Neo", "bB_Neo", "bQ_Neo", "bK_Neo", "bP_Neo"]
+    theme = "neo/"
     for piece in pieces:
-        IMAGES[piece] = p.transform.scale(p.image.load("images/"+piece+".png"), (SQ_SIZE, SQ_SIZE))
+        IMAGES[piece] = p.transform.scale(p.image.load("images/"+theme+piece+".png"), (SQ_SIZE, SQ_SIZE))
 
 
 """
@@ -27,7 +27,7 @@ The main drive of our code. This will handle user input and updating the graphic
 def main():
     p.init()
     p.display.set_caption("Chess")
-    p.display.set_icon(p.image.load('images/bQ_Neo.png'))
+    p.display.set_icon(p.image.load('images/neo/bQ.png'))
     screen = p.display.set_mode((WIDTH, HEIGHT))
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
@@ -68,8 +68,10 @@ def main():
                     if move in validMoves:
                         gs.makeMove(move)
                         moveMade = True
-                    sqSelected = ()
-                    playerClicks = []
+                        sqSelected = ()
+                        playerClicks = []
+                    else:
+                        playerClicks = [sqSelected]
 
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z:
@@ -98,10 +100,25 @@ def drawBoard(screen):
     WHITE = (237, 238, 209)
     GREEN = (119, 153, 82)
     colors = [p.Color(WHITE), p.Color(GREEN)]
+
     for r in range(DIMENTIONS):
         for c in range(DIMENTIONS):
             color = colors[((r+c)%2)]
             p.draw.rect(screen, color, p.Rect(c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
+    
+    # Display Files and Ranks:
+        # Display numbers only on the "a" file
+        font = p.font.SysFont('comicsans', 14, bold=True)
+        text = font.render(str(8 - r), True, colors[0] if r % 2 == 1 else colors[1])
+        text_rect = text.get_rect(center=(SQ_SIZE // 8, r * SQ_SIZE + SQ_SIZE // 4))
+        screen.blit(text, text_rect)
+        
+    # Display file letters on the top
+    for c in range(DIMENTIONS):
+        font = p.font.SysFont('comicsans', 18)
+        text = font.render(chr(97 + c), True, colors[0] if c % 2 == 0 else colors[1])
+        text_rect = text.get_rect(bottomright=(c * SQ_SIZE + SQ_SIZE - SQ_SIZE / 32, 8 * SQ_SIZE))
+        screen.blit(text, text_rect)
 
 '''
 Draw the pieces
