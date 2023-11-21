@@ -59,14 +59,15 @@ def findBestMoveThings(gs,validMoves):
 Helper method to make first recursive call
 '''
 def findBestMove(gs, validMoves):
-    global nextMove, counter
+    global nextMove
+    # , counter
     nextMove = None
     random.shuffle(validMoves)
     counter = 0
     # findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
     # findMoveNegaMax(gs, validMoves, DEPTH, 1 if gs.whiteToMove else -1)
     findMoveNegaMaxAlphaBeta(gs, validMoves, DEPTH, -CHECKMATE, CHECKMATE, 1 if gs.whiteToMove else -1)
-    print(counter)
+    # print(counter)
     return nextMove
 
 '''

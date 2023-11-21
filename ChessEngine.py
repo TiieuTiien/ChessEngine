@@ -165,6 +165,19 @@ class GameState:
                 elif move.startCol == 7:
                     self.currentCastlingRight.bks = False
 
+        # If a rook is captured
+        if move.pieceCaptured == 'wR':
+            if move.endRow == 7:
+                if move.endCol == 0:
+                    self.currentCastlingRight.wqs = False
+                elif move.endCol == 7:
+                    self.currentCastlingRight.wks = False
+        elif move.pieceCaptured == 'bR':
+            if move.endRow == 0:
+                if move.endCol == 0:
+                    self.currentCastlingRight.bqs = False
+                elif move.endCol == 7:
+                    self.currentCastlingRight.bks = False
 
     """
     All moves considering checks
@@ -391,6 +404,7 @@ class Move:
         # Castle move
         self.isCastleMove = isCastleMove
 
+        self.isCapture = self.pieceCaptured != '--'
         self.moveID = self.startRow*1000+self.startCol*100+self.endRow*10+self.endCol
         # print(self.moveID)
 
@@ -408,3 +422,30 @@ class Move:
 
     def getRankFile(self, r, c):
         return self.colsToFiles[c] + self.rowsToRanks[r]
+    
+    # overiding the str() function
+    def __str__(self):
+        # Castle move
+        if self.isCastleMove:
+            return "O-O" if self.endCol == 6 else "O-O-O"
+        
+        endSquare = self.getRankFile(self.endRow, self.endCol)
+
+        # Pawn moves
+        if self.pieceMoved[1] == 'P':
+            if self.isCapture:
+                return self.colsToFiles[self.startCol] + 'x' + endSquare
+            else:
+                return endSquare
+
+        # Pawn promotion
+
+        # Same piece to one square
+
+        # Check and checkmate
+
+        # Piece moves
+        moveString = self.pieceMoved[1]
+        if self.isCapture:
+            moveString += 'x'
+        return moveString + endSquare
