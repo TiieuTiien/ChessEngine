@@ -80,16 +80,19 @@ def main():
                         if not moveMade:
                             playerClicks = [sqSelected]
 
+            # Key handler
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z:
                     gs.undoMove()
                     moveMade = True
+                    gameOver = False
                 if e.key == p.K_r:
                     gs = ChessEngine.GameState()
                     validMoves = gs.getValidMoves()
                     sqSelected = ()
                     playerClicks = []
                     moveMade = False
+                    gameOver = False
         
         # AI move finder
         if not gameOver and not humanTurn:

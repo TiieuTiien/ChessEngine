@@ -138,6 +138,8 @@ class GameState:
                     self.board[move.endRow][move.endCol-2] = self.board[move.endRow][move.endCol+1]
                     self.board[move.endRow][move.endCol+1] = '--' 
 
+            self.checkMate = False
+            self.staleMate = False
 
 
     '''
