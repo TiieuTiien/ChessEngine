@@ -17,7 +17,17 @@ class GameState:
             ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
             ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]
         ]
-
+        self.board = [
+            ["bR", "--", "--", "--", "bK", "--", "--", "wR"],
+            ["--", "--", "--", "--", "wP", "--", "--", "--"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["--", "--", "--", "--", "bP", "--", "--", "--"],
+            ["wR", "--", "--", "--", "wK", "--", "--", "wR"],
+        ]
+        
         self.moveFunctions = {
             'P': self.getPawnMoves,
             'R': self.getRockMoves,
@@ -342,22 +352,23 @@ class GameState:
         directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
         self.getOneMoveInDirections(r, c, moves, directions)
 
-    '''
-    Generate all valid castle moves for the king at(r, c) and add them to the list of moves
-    '''
-    def getCastleMoves(self, r, c, moves):
-        if self.squareUnderAttack(r, c):
-            return
-        if (self.whiteToMove and self.currentCastlingRight.wks) or (not self.whiteToMove and self.currentCastlingRight.bks):
-            self.getKingSideCastleMoves(r, c, moves)
-        if (self.whiteToMove and self.currentCastlingRight.wqs) or (not self.whiteToMove and self.currentCastlingRight.bqs):
-            self.getQueenSideCastleMoves(r, c, moves)
+        '''
+        Generate all valid castle moves for the king at(r, c) and add them to the list of moves
+        '''
+        def getCastleMoves(self, r, c, moves):
+            direction = -1 if self.whiteToMove else 1
+            if self.squareUnderAttack(r, c) or (self.board[r+direction][c][1] == 'P'):
+                return
+            if (self.whiteToMove and self.currentCastlingRight.wks) or (not self.whiteToMove and self.currentCastlingRight.bks):
+                self.getKingSideCastleMoves(r, c, moves)
+            if (self.whiteToMove and self.currentCastlingRight.wqs) or (not self.whiteToMove and self.currentCastlingRight.bqs):
+                self.getQueenSideCastleMoves(r, c, moves)
 
     '''
     Generate all valid king side castle moves for the king at(r, c) and add them to the list of moves
     '''
     def getKingSideCastleMoves(self, r, c, moves):
-        if self.board[r][c+1] == '--' and self.board[r][c+2] == '--':
+        if self.board[r][c+1] == '--' and self.board[r][c+2] == '--' and self.board[r][c+3][1] == 'R':
             if not self.squareUnderAttack(r, c+1) and not self.squareUnderAttack(r, c+2):
                 moves.append(Move((r, c), (r, c+2), self.board, isCastleMove=True))
 
@@ -365,7 +376,7 @@ class GameState:
     Generate all valid queen side castle moves for the king at(r, c) and add them to the list of moves
     '''
     def getQueenSideCastleMoves(self, r, c, moves):
-        if self.board[r][c-1] == '--' and self.board[r][c-2] == '--' and self.board[r][c-3] == '--':
+        if self.board[r][c-1] == '--' and self.board[r][c-2] == '--' and self.board[r][c-3] == '--' and self.board[r][c-4][1] == 'R':
             if not self.squareUnderAttack(r, c-1) and not self.squareUnderAttack(r, c-2):
                 moves.append(Move((r, c), (r, c-2), self.board, isCastleMove=True))
         
