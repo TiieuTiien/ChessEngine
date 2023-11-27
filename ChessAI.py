@@ -1,16 +1,79 @@
 import random
 
-pieceScore = {
-    'K':0,
-    'Q':9,
-    'R':5,
-    'B':3,
-    'N':4,
-    'P':1,
-}
+pieceScore = {'K':0, 'Q':9, 'R':5, 'B':3, 'N':3, 'P':1}
+
+# Knight score
+knightScores = [
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 2, 2, 2, 2, 2, 2, 1],
+    [1, 2, 3, 3, 3, 3, 2, 1],
+    [1, 2, 3, 4, 4, 3, 2, 1],
+    [1, 2, 3, 4, 4, 3, 2, 1],
+    [1, 2, 3, 3, 3, 3, 2, 1],
+    [1, 2, 2, 2, 2, 2, 2, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],]
+
+# Bishop score
+bishopScores = [
+    [4, 3, 2, 1, 1, 2, 3, 4],
+    [3, 4, 3, 2, 2, 3, 4, 3],
+    [2, 3, 4, 3, 3, 4, 3, 2],
+    [1, 2, 3, 4, 4, 3, 2, 1],
+    [1, 2, 3, 4, 4, 3, 2, 1],
+    [2, 3, 4, 3, 3, 4, 3, 2],
+    [3, 4, 3, 2, 2, 3, 4, 3],
+    [4, 3, 2, 1, 1, 2, 3, 4],]
+
+# Queen score
+queenScores = [
+    [1, 1, 1, 3, 1, 1, 1, 1],
+    [1, 2, 3, 3, 3, 1, 1, 1],
+    [1, 4, 3, 3, 3, 4, 2, 1],
+    [1, 2, 3, 3, 3, 2, 2, 1],
+    [1, 2, 3, 3, 3, 2, 2, 1],
+    [1, 4, 3, 3, 3, 4, 2, 1],
+    [1, 2, 3, 3, 3, 1, 1, 1],
+    [1, 1, 1, 3, 1, 1, 1, 1],]
+
+# Rock score
+rockScores = [
+    [4, 3, 4, 4, 4, 4, 3, 4],
+    [4, 4, 4, 4, 4, 4, 4, 4],
+    [1, 1, 2, 3, 3, 2, 1, 1],
+    [1, 2, 3, 4, 4, 3, 2, 1],
+    [1, 2, 3, 4, 4, 3, 2, 1],
+    [1, 1, 2, 3, 3, 2, 1, 1],
+    [4, 4, 4, 4, 4, 4, 4, 4],
+    [4, 3, 4, 4, 4, 4, 3, 4],]
+
+# White pawn score
+whitePawnScores = [
+    [8, 8, 8, 8, 8, 8, 8, 8],
+    [8, 8, 8, 8, 8, 8, 8, 8],
+    [5, 6, 6, 7, 7, 6, 6, 5],
+    [2, 3, 3, 5, 5, 3, 3, 2],
+    [1, 2, 3, 4, 4, 3, 2, 1],
+    [1, 1, 2, 3, 3, 2, 1, 1],
+    [1, 1, 1, 0, 0, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0],]
+
+# Black pawn score
+blackPawnScores = [
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 0, 0, 1, 1, 1],
+    [1, 1, 2, 3, 3, 2, 1, 1],
+    [1, 2, 3, 4, 4, 3, 2, 1],
+    [2, 3, 3, 5, 5, 3, 3, 2],
+    [5, 6, 6, 7, 7, 6, 6, 5],
+    [8, 8, 8, 8, 8, 8, 8, 8],
+    [8, 8, 8, 8, 8, 8, 8, 8],
+]
+
+piecePositionScores = {'Q':queenScores, 'R':rockScores, 'B':bishopScores, 'N':knightScores, 'wP':whitePawnScores, 'bP':blackPawnScores}
+
 CHECKMATE = 1000
 STALEMATE = 0
-DEPTH = 3
+DEPTH = 2
 
 '''
 Picks and returns a random move.
@@ -58,20 +121,20 @@ def findBestMoveThings(gs,validMoves):
 '''
 Helper method to make first recursive call
 '''
-def findBestMove(gs, validMoves):
+def findBestMove(gs, validMoves, returnQueue):
     global nextMove
     # , counter
     nextMove = None
     random.shuffle(validMoves)
     counter = 0
     # findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
-    # findMoveNegaMax(gs, validMoves, DEPTH, 1 if gs.whiteToMove else -1)
-    findMoveNegaMaxAlphaBeta(gs, validMoves, DEPTH, -CHECKMATE, CHECKMATE, 1 if gs.whiteToMove else -1)
+    findMoveNegaMax(gs, validMoves, DEPTH, 1 if gs.whiteToMove else -1)
+    # findMoveNegaMaxAlphaBeta(gs, validMoves, DEPTH, -CHECKMATE, CHECKMATE, 1 if gs.whiteToMove else -1)
     # print(counter)
-    return nextMove
+    returnQueue.put(nextMove)
 
 '''
-
+Find the best move based on Minimax algorithms evaluate by material alone.
 '''
 def findMoveMinMax(gs, validMoves, depth, whiteToMove):
     global nextMove
@@ -172,12 +235,25 @@ def scoreBoard(gs):
         return STALEMATE
 
     score = 0
-    for row in gs.board:
-        for square in row:
-            if square[0] == 'w':
-                score += pieceScore[square[1]]
-            elif square[0] == 'b':
-                score -= pieceScore[square[1]]
+    for row in range(len(gs.board)):
+        for col in range(len(gs.board[row])):
+            square = gs.board[row][col]
+
+            if square != '--':
+                # Score it positionally
+                piecePositionScore = 0
+                if square[1] != 'K':
+                    # for pawns
+                    if square[1] == 'P':
+                        piecePositionScore = piecePositionScores[square][row][col]
+                    # for other pieces
+                    else:
+                        piecePositionScore = piecePositionScores[square[1]][row][col]
+
+                if square[0] == 'w':
+                    score += pieceScore[square[1]] + piecePositionScore * .1
+                elif square[0] == 'b':
+                    score -= pieceScore[square[1]] - piecePositionScore * .1
 
     return score
 

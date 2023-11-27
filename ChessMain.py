@@ -3,6 +3,7 @@ This  is our main driver file. It will be responsible for handling user input an
 """
 import pygame as p
 import ChessEngine, ChessAI
+from multiprocessing import Process, Queue
 
 BOARD_WIDTH = BOARD_HEIGHT = 512
 MOVE_LOG_PANEL_WIDTH = 250
@@ -56,6 +57,10 @@ def main():
     playerOne = True # If human playing white then player one is true and vice versa
     playerTwo = True # Same as above
 
+    AIThinking = False
+    moveFinderProcess = None
+    moveUndone = False
+
     while running:
         humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
         for e in p.event.get():
@@ -92,6 +97,11 @@ def main():
                     gs.undoMove()
                     moveMade = True
                     gameOver = False
+                    if AIThinking:
+                        moveFinderProcess.terminate()
+                        AIThinking = False
+                    moveUndone = True
+
                 if e.key == p.K_r:
                     gs = ChessEngine.GameState()
                     validMoves = gs.getValidMoves()
@@ -99,18 +109,35 @@ def main():
                     playerClicks = []
                     moveMade = False
                     gameOver = False
+                    if AIThinking:
+                        moveFinderProcess.terminate()
+                        AIThinking = False
+                    moveUndone = True
         
         # AI move finder
-        if not gameOver and not humanTurn:
-            AIMove = ChessAI.findBestMove(gs, validMoves)
-            if AIMove is None:
-                AIMove = ChessAI.findRandomMove(validMoves)
-            gs.makeMove(AIMove)
-            moveMade = True
+        if not gameOver and not humanTurn and not moveUndone:
+            if not AIThinking:
+                AIThinking = True
+                print("Thinking...")
+
+                # Use this to pass data between threads
+                returnQueue = Queue()
+                moveFinderProcess = Process(target=ChessAI.findBestMove, args=(gs, validMoves, returnQueue))
+                moveFinderProcess.start()
+
+            if not moveFinderProcess.is_alive():
+                print("Done thinking!")
+                AIMove = returnQueue.get()
+                if AIMove is None:
+                    AIMove = ChessAI.findRandomMove(validMoves)
+                gs.makeMove(AIMove)
+                moveMade = True
+                AIThinking = False
 
         if moveMade:
             validMoves = gs.getValidMoves()
             moveMade = False
+            moveUndone = False
 
         drawGameState(screen, gs, validMoves, sqSelected, moveLogFont)
 
@@ -214,7 +241,7 @@ def drawMoveLog(screen, gs, font):
             moveString += str(moveLog[i+1]) + "     "
         moveTexts.append(moveString)
 
-    movePerRow = 3
+    movePerRow = 1
     padding = 5
     lineSpacing = 2
     textY = padding
@@ -235,4 +262,4 @@ def drawEndGameText(screen, text):
     screen.blit(textObject, textLocation)
 
 if __name__ == "__main__":
-    main()    
+    main()
