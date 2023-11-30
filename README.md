@@ -14,3 +14,5 @@ python src/main.py
 ```
 ## Source
 Based on [Creating a Chess Engine in Python playlist](https://youtube.com/playlist?list=PLBwF487qi8MGU81nDGaeNE1EnNEPYWKY_&si=aaGqj99yB2HxHcLi) by Eddie Sharick.
+
+GUI follow [How to Create a Menu in Pygame](https://youtu.be/2iyx8_elcYg) by Coding With Russ
