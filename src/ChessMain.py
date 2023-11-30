@@ -55,7 +55,7 @@ def main():
 
     gameOver = False
     playerOne = True # If human playing white then player one is true and vice versa
-    playerTwo = False # Same as above
+    playerTwo = True # Same as above
 
     AIThinking = False
     moveFinderProcess = None
@@ -67,7 +67,6 @@ def main():
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
-
         
             elif e.type == p.MOUSEBUTTONDOWN:
                 if not gameOver and humanTurn:
@@ -147,7 +146,7 @@ def main():
         if gs.checkMate or gs.draw or gs.staleMate:
             gameOver = True
             text = 'Stale mate!!!' if gs.staleMate else 'Draw!!!' if gs.draw else 'Black wins by checkmate' if gs.whiteToMove else 'White wins by checkmate'
-            drawEndGameText(text)
+            drawEndGameText(screen, text)
 
         clock.tick(MAX_FPS)
         p.display.flip()
