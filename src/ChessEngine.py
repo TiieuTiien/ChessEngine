@@ -4,7 +4,6 @@ responsible for determining the valid moves at the current state. It will also k
 """
 PIECES = {"bP", "bR", "bQ", "wP", "wR", "wQ"}
 
-
 class GameState:
     def __init__(self):
         # Normal board
@@ -18,16 +17,16 @@ class GameState:
             ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
             ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"],
         ]
-        self.board = [
-            ["--", "--", "--", "--", "bK", "--", "--", "--"],
-            ["bB", "wN", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "--", "wK", "--", "--", "--"],
-        ]
+        # self.board = [
+        #     ["--", "--", "--", "--", "bK", "--", "--", "--"],
+        #     ["bB", "wN", "--", "--", "--", "--", "--", "--"],
+        #     ["--", "--", "--", "--", "--", "--", "--", "--"],
+        #     ["--", "--", "--", "--", "--", "--", "--", "--"],
+        #     ["--", "--", "--", "--", "--", "--", "--", "--"],
+        #     ["--", "--", "--", "--", "--", "--", "--", "--"],
+        #     ["--", "--", "--", "--", "--", "--", "--", "--"],
+        #     ["--", "--", "--", "--", "wK", "--", "--", "--"],
+        # ]
 
         self.moveFunctions = {
             "P": self.getPawnMoves,
@@ -122,10 +121,9 @@ class GameState:
             else:
                 self.staleMate = True
                 print("Stale mate!!!")
-        
+
         # Insufficient mating material
         piece_counts = { "wP": 0, "wR": 0, "wN": 0, "wB": 0, "wQ": 0, "wK": 0, "bP": 0, "bR": 0, "bN": 0, "bB": 0, "bQ": 0, "bK": 0,}
-
         for r in range(len(self.board)):
             for c in range(len(self.board[r])):
                 if self.board[r][c] != "--":
