@@ -118,10 +118,10 @@ class GameState:
         if len(moves) == 0:
             if self.incheck():
                 self.checkMate = True
-                print("Check mate!!!")
+                # print("Check mate!!!")
             else:
                 self.staleMate = True
-                print("Stale mate!!!")
+                # print("Stale mate!!!")
         
         # Insufficient mating material
         piece_counts = { "wP": 0, "wR": 0, "wN": 0, "wB": 0, "wQ": 0, "wK": 0, "bP": 0, "bR": 0, "bN": 0, "bB": 0, "bQ": 0, "bK": 0,}
@@ -150,7 +150,7 @@ class GameState:
         ):
             self.draw = True
 
-        print(piece_counts)
+        # print(piece_counts)
         # End of insufficient
 
         self.enpassantPossible = tempEnpassantPossible
