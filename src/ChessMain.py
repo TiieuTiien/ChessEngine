@@ -1,6 +1,8 @@
 """
 This  is our main driver file. It will be responsible for handling user input and displaying the current GameState object.
 """
+from os import environ
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame as p
 import ChessEngine, ChessAI
 from multiprocessing import Process, Queue
