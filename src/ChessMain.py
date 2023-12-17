@@ -54,7 +54,7 @@ def main():
     playerClicks = []
 
     gameOver = False
-    playerOne = True # If human playing white then player one is true and vice versa
+    playerOne = False # If human playing white then player one is true and vice versa
     playerTwo = True # Same as above
 
     AIThinking = False

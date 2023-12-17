@@ -123,14 +123,14 @@ Helper method to make first recursive call
 '''
 def findBestMove(gs, validMoves, returnQueue):
     global nextMove
-    # , counter
+    global counter
     nextMove = None
     random.shuffle(validMoves)
     counter = 0
     # findMoveMinMax(gs, validMoves, DEPTH, gs.whiteToMove)
-    findMoveNegaMax(gs, validMoves, DEPTH, 1 if gs.whiteToMove else -1)
-    # findMoveNegaMaxAlphaBeta(gs, validMoves, DEPTH, -CHECKMATE, CHECKMATE, 1 if gs.whiteToMove else -1)
-    # print(counter)
+    # findMoveNegaMax(gs, validMoves, DEPTH, 1 if gs.whiteToMove else -1)
+    findMoveNegaMaxAlphaBeta(gs, validMoves, DEPTH, -CHECKMATE, CHECKMATE, 1 if gs.whiteToMove else -1)
+    print(counter)
     returnQueue.put(nextMove)
 
 '''
@@ -172,8 +172,8 @@ Find move nega max
 '''
 def findMoveNegaMax(gs, validMoves, depth, turnMultiplier):
     global nextMove
-    # , counter
-    # counter+=1
+    global counter
+    counter+=1
     if depth == 0:
         return turnMultiplier * scoreBoard(gs)
     
@@ -196,8 +196,8 @@ Beta is minimum
 '''
 def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier):
     global nextMove
-    # , counter
-    # counter+=1
+    global counter
+    counter+=1
     if depth == 0:
         return turnMultiplier * scoreBoard(gs)
     
