@@ -118,10 +118,10 @@ class GameState:
         if len(moves) == 0:
             if self.incheck():
                 self.checkMate = True
-                print("Check mate!!!")
+                # print("Check mate!!!")
             else:
                 self.staleMate = True
-                print("Stale mate!!!")
+                # print("Stale mate!!!")
         
         # Insufficient mating material
         piece_counts = { "wP": 0, "wR": 0, "wN": 0, "wB": 0, "wQ": 0, "wK": 0, "bP": 0, "bR": 0, "bN": 0, "bB": 0, "bQ": 0, "bK": 0,}
@@ -565,11 +565,10 @@ class Move:
             return self.moveID == other.moveID
         return False
 
-    def getChessNotation(self):
+    def getChessNotation(self, moveLog):
         # Can be modify to show real chess notation
-        return self.getRankFile(self.startRow, self.startCol) + self.getRankFile(
-            self.endRow, self.endCol
-        )
+        return "" if moveLog == None else moveLog[len(moveLog)-1]
+        # return self.getRankFile(self.startRow, self.startCol) + self.getRankFile(self.endRow, self.endCol)
 
     def getRankFile(self, r, c):
         return self.colsToFiles[c] + self.rowsToRanks[r]

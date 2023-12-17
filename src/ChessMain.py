@@ -65,7 +65,6 @@ def main():
 
     while running:
         humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)# Check if the user has clicked the close button (QUIT event)
-
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
@@ -85,7 +84,6 @@ def main():
 
                     if len(playerClicks) == 2:
                         move = ChessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
-                        print(move.getChessNotation())
                         for i in range(len(validMoves)):
                             if move == validMoves[i]:
                                 gs.makeMove(validMoves[i])
@@ -94,6 +92,8 @@ def main():
                                 playerClicks = []
                         if not moveMade:
                             playerClicks = [sqSelected]
+                        whoIsPlaying = "P2" if gs.whiteToMove else "P1"
+                        print(whoIsPlaying, "move: ", move.getChessNotation(gs.moveLog))
 
             # Key handler
             elif e.type == p.KEYDOWN:
@@ -134,6 +134,7 @@ def main():
                 AIMove = returnQueue.get()
                 if AIMove is None:
                     AIMove = ChessAI.findRandomMove(validMoves)
+                print("AI move: ", AIMove)
                 gs.makeMove(AIMove)
                 moveMade = True
                 AIThinking = False
