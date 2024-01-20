@@ -1,5 +1,5 @@
 # ChessEngine
-Create a chess engine with Python
+Developing this engine has been a challenging yet incredibly rewarding journey, pushing the boundaries of my coding skills to create a robust and strategic player. From optimizing algorithms to enhancing board evaluation, every line of code is a move towards a more powerful and intelligent chess companion.
 
 [![Pygame](https://img.shields.io/badge/Pygame-v2.5.2-green.svg)](https://www.pygame.org/wiki/about)
 [![License: MIT](https://img.shields.io/badge/License-MIT-brown.svg)](https://opensource.org/licenses/MIT)
